@@ -1,0 +1,15 @@
+/Users/sashengovinasamy/Documents/Dev/dotnet-elevator-console/src/ElevatorSim.Application/bin/Debug/net10.0/ElevatorSim.Application.deps.json
+/Users/sashengovinasamy/Documents/Dev/dotnet-elevator-console/src/ElevatorSim.Application/bin/Debug/net10.0/ElevatorSim.Application.dll
+/Users/sashengovinasamy/Documents/Dev/dotnet-elevator-console/src/ElevatorSim.Application/bin/Debug/net10.0/ElevatorSim.Application.pdb
+/Users/sashengovinasamy/Documents/Dev/dotnet-elevator-console/src/ElevatorSim.Application/bin/Debug/net10.0/ElevatorSim.Domain.dll
+/Users/sashengovinasamy/Documents/Dev/dotnet-elevator-console/src/ElevatorSim.Application/bin/Debug/net10.0/ElevatorSim.Domain.pdb
+/Users/sashengovinasamy/Documents/Dev/dotnet-elevator-console/src/ElevatorSim.Application/obj/Debug/net10.0/ElevatorSim.Application.csproj.AssemblyReference.cache
+/Users/sashengovinasamy/Documents/Dev/dotnet-elevator-console/src/ElevatorSim.Application/obj/Debug/net10.0/ElevatorSim.Application.GeneratedMSBuildEditorConfig.editorconfig
+/Users/sashengovinasamy/Documents/Dev/dotnet-elevator-console/src/ElevatorSim.Application/obj/Debug/net10.0/ElevatorSim.Application.AssemblyInfoInputs.cache
+/Users/sashengovinasamy/Documents/Dev/dotnet-elevator-console/src/ElevatorSim.Application/obj/Debug/net10.0/ElevatorSim.Application.AssemblyInfo.cs
+/Users/sashengovinasamy/Documents/Dev/dotnet-elevator-console/src/ElevatorSim.Application/obj/Debug/net10.0/ElevatorSim.Application.csproj.CoreCompileInputs.cache
+/Users/sashengovinasamy/Documents/Dev/dotnet-elevator-console/src/ElevatorSim.Application/obj/Debug/net10.0/Elevator.6F3EE1A8.Up2Date
+/Users/sashengovinasamy/Documents/Dev/dotnet-elevator-console/src/ElevatorSim.Application/obj/Debug/net10.0/ElevatorSim.Application.dll
+/Users/sashengovinasamy/Documents/Dev/dotnet-elevator-console/src/ElevatorSim.Application/obj/Debug/net10.0/refint/ElevatorSim.Application.dll
+/Users/sashengovinasamy/Documents/Dev/dotnet-elevator-console/src/ElevatorSim.Application/obj/Debug/net10.0/ElevatorSim.Application.pdb
+/Users/sashengovinasamy/Documents/Dev/dotnet-elevator-console/src/ElevatorSim.Application/obj/Debug/net10.0/ref/ElevatorSim.Application.dll
