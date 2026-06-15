@@ -1,0 +1,27 @@
+
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.DotSettings.user
+
+## Logs
+logs/
+*.log
+
+## NuGet
+*.nupkg
+.nuget/
+
+## Rider / JetBrains
+.idea/
+
+## VS Code
+.vscode/
+!.vscode/extensions.json
+
+## OS
+.DS_Store
+Thumbs.db
