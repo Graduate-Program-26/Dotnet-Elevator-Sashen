@@ -1,6 +1,6 @@
 using ElevatorSim.Domain.Enums;
 using ElevatorSim.Domain.Exceptions;
-using ElevatorSim.Domain.Intertaces;
+using ElevatorSim.Domain.Interfaces;
 
 namespace ElevatorSim.Domain.Entities;
 
