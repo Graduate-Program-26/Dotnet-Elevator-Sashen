@@ -4,7 +4,7 @@ public sealed record BuildingConfiguration
 {
     public int TotalFloors { get; }
     public int TotalElevators { get; }
-    public int ElevatorCapacity { get; }
+    public int ElevatorPassengerCapacity { get; }
     public const int GroundFloor = 1;
     public BuildingConfiguration(int totalFloors, int totalElevators, int elevatorPassengerCapacity)
     {

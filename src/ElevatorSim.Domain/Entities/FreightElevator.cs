@@ -8,6 +8,7 @@ public sealed class FreightElevator : ElevatorBase
     private const int FreightPersonEquivalentCapacity = 2;
     private const int FreightTransitDelayMilliseconds = 1400;
     public int MaxLoadUnits { get; }
+    public int CurrentLoadUnits { get; private set; }
     protected override int FloorTransitDelayMilliseconds => FreightTransitDelayMilliseconds;
     public override ElevatorType Type => ElevatorType.Freight;
     public override int MaximumPassengerCapacity => FreightPersonEquivalentCapacity;

@@ -1,17 +1,17 @@
 using ElevatorSim.Domain.Enums;
 
-namespace ElevatorSim.Domain.Interfaces;
+namespace ElevatorSim.Domain.Entities;
 
-public sealed class PassenngerElevator : ElevatorBase
+public sealed class PassengerElevator : ElevatorBase
 {
     public override ElevatorType Type => ElevatorType.Passenger;
-    public override int MaximumPassenngerCapacity { get; }
-    public PassenngerElevator(int id, int initialFloor, int maximumPassengerCapacity) : base(id, initialFloor)
+    public override int MaximumPassengerCapacity { get; }
+
+    public PassengerElevator(int id, int initialFloor, int maximumPassengerCapacity) : base(id, initialFloor)
     {
         if (maximumPassengerCapacity < 1)
-            throw new ArgumentException(nameof(maximumPassengerCapacity), "Passenger elevator must hold at least one person.");
+            throw new ArgumentOutOfRangeException(nameof(maximumPassengerCapacity), "Passenger elevator must hold at least one person.");
 
-        MaximumPassenngerCapacity = maximumPassengerCapacity;
+        MaximumPassengerCapacity = maximumPassengerCapacity;
     }
-
 }
