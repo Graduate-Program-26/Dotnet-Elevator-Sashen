@@ -15,7 +15,7 @@ public sealed class ElevatorRequestValidatorTests
     public void Validate_WithValidRequest_PassesValidation()
     {
         var validator = new ElevatorRequestValidator(_tenFloorBuilding);
-        ElevatorRequest validRequest = ElevatorRequest.CreateNow(requestedFloor: 5, passengerCount: 3);
+        ElevatorRequest validRequest = ElevatorRequest.Create(requestedFloor: 5, passengerCount: 3);
         ValidationResult result = validator.Validate(validRequest);
         Assert.True(result.IsValid);
     }
@@ -27,7 +27,7 @@ public sealed class ElevatorRequestValidatorTests
     public void Validate_WithInvalidFloor_FailsValidation(int invalidFloor)
     {
         var validator = new ElevatorRequestValidator(_tenFloorBuilding);
-        ElevatorRequest requestWithBadFloor = ElevatorRequest.CreateNow(invalidFloor, passengerCount: 1);
+        ElevatorRequest requestWithBadFloor = ElevatorRequest.Create(invalidFloor, passengerCount: 1);
         ValidationResult result = validator.Validate(requestWithBadFloor);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, error =>
@@ -38,7 +38,7 @@ public sealed class ElevatorRequestValidatorTests
     public void Validate_WithPassengerCountExceedingCapacity_FailsValidation()
     {
         var validator = new ElevatorRequestValidator(_tenFloorBuilding);
-        ElevatorRequest requestWithTooManyPassengers = ElevatorRequest.CreateNow(
+        ElevatorRequest requestWithTooManyPassengers = ElevatorRequest.Create(
             requestedFloor: 5, passengerCount: 9); 
 
         ValidationResult result = validator.Validate(requestWithTooManyPassengers);

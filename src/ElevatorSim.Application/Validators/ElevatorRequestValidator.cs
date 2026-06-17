@@ -7,8 +7,8 @@ public sealed class ElevatorRequestValidator : AbstractValidator<ElevatorRequest
     public ElevatorRequestValidator(BuildingConfiguration buildingConfiguration)
     {
         RuleFor(request => request.RequestedFloor)
-            .GreaterThanOrEqualTo(buildingConfiguration.GroundFloor)
-            .WithMessage($"Floor must be at least {buildingConfiguration.GroundFloor}.")
+            .GreaterThanOrEqualTo(BuildingConfiguration.GroundFloor)
+            .WithMessage($"Floor must be at least {BuildingConfiguration.GroundFloor}.")
             .LessThanOrEqualTo(buildingConfiguration.TotalFloors)
             .WithMessage($"Floor cannot exceed {buildingConfiguration.TotalFloors} (the top floor of this building).");
 
