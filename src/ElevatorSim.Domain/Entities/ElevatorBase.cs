@@ -23,10 +23,10 @@ public abstract class ElevatorBase : IElevator, IElevatorControl
 
     public event EventHandler<int>? FloorReached;
 
-    protected ElevatorBase(int Id, int intialFloor)
+    protected ElevatorBase(int id, int initialFloor)
     {
-        Id = Id;
-        CurrentFloor = intialFloor;
+        Id = id;
+        CurrentFloor = initialFloor;
         Direction = ElevatorDirection.Stationary;
         Status = ElevatorStatus.Idle;
         _currentPassengerCount = 0;
@@ -83,7 +83,10 @@ public abstract class ElevatorBase : IElevator, IElevatorControl
         Status = ElevatorStatus.Idle;
     }
 
-    public virtual async Task DisembarkAllPassengerAsync(CancellationToken cancellationToken)
+    public bool IsAvailable =>
+        Status is ElevatorStatus.Idle && _currentPassengerCount < MaximumPassengerCapacity;
+
+    public virtual async Task DisembarkAllPassengersAsync(CancellationToken cancellationToken)
     {
         _currentPassengerCount = 0;
         Status = ElevatorStatus.DoorsOpen;
