@@ -1,6 +1,5 @@
 using System.Threading.Channels;
 using ElevatorSim.Application.Interfaces;
-using ElevatorSim.Domain.Entities;
 using ElevatorSim.Domain.Interfaces;
 using ElevatorSim.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
@@ -10,7 +9,7 @@ public sealed class ElevatorController : IElevatorController, IAsyncDisposable
 {
     private readonly IDispatchStrategy _dispatchStrategy;
     private readonly ILogger<ElevatorController> _logger;
-    private readonly List<ElevatorBase> _elevators;
+    private readonly List<IElevatorControl> _elevators;
     private readonly Channel<ElevatorRequest> _pendingRequestChannel;
     private readonly Task _requestProcessorTask;
     private readonly CancellationTokenSource _shutdownTokenSource;
@@ -18,7 +17,7 @@ public sealed class ElevatorController : IElevatorController, IAsyncDisposable
     public ElevatorController(
         IDispatchStrategy dispatchStrategy,
         ILogger<ElevatorController> logger,
-        IEnumerable<ElevatorBase> elevators)
+        IEnumerable<IElevatorControl> elevators)
     {
         _dispatchStrategy = dispatchStrategy;
         _logger = logger;
@@ -46,7 +45,7 @@ public sealed class ElevatorController : IElevatorController, IAsyncDisposable
             "Elevator {ElevatorId} dispatched to floor {Floor} for {PassengerCount} passengers.",
             selectedElevator.Id, request.RequestedFloor, request.PassengerCount);
 
-        ElevatorBase elevatorControl = _elevators.First(elevator => elevator.Id == selectedElevator.Id);
+        IElevatorControl elevatorControl = _elevators.First(elevator => elevator.Id == selectedElevator.Id);
         _ = Task.Run(
             () => ExecuteElevatorTripAsync(elevatorControl, request, cancellationToken),
             cancellationToken);
@@ -55,10 +54,10 @@ public sealed class ElevatorController : IElevatorController, IAsyncDisposable
     }
 
     public IReadOnlyList<IElevator> GetAllElevatorStatuses() =>
-        _elevators.Cast<IElevator>().ToList().AsReadOnly();
+        _elevators.OfType<IElevator>().ToList().AsReadOnly();
 
     private async Task ExecuteElevatorTripAsync(
-        ElevatorBase elevator,
+        IElevatorControl elevator,
         ElevatorRequest request,
         CancellationToken cancellationToken)
     {
