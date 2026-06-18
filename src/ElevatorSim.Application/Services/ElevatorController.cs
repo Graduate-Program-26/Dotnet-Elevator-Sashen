@@ -14,8 +14,8 @@ public sealed class ElevatorController : IElevatorController, IAsyncDisposable
     private readonly Task _requestProcessorTask;
     private readonly CancellationTokenSource _shutdownTokenSource;
 
-    private const int _noElevatorAvailableRetryDelayMilliseconds = 1000;
-    private const int _deliveringPassengersDisplayDelayMilliseconds = 1500;
+    private const int _noElevatorAvailableRetryDelayMilliseconds = 5000;
+    private const int _deliveringPassengersDisplayDelayMilliseconds = 5000;
 
     public ElevatorController(
         IDispatchStrategy dispatchStrategy,
