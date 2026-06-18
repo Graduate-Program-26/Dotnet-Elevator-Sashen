@@ -14,6 +14,16 @@ public sealed class ElevatorController : IElevatorController, IAsyncDisposable
     private readonly Task _requestProcessorTask;
     private readonly CancellationTokenSource _shutdownTokenSource;
 
+    // When no elevator is available, the request gets written back onto this same
+    // channel. Without a delay, the reader picks it straight back up with nothing
+    // having changed, spinning the CPU and flooding the logs until something frees up.
+    private const int _noElevatorAvailableRetryDelayMilliseconds = 1000;
+
+    // How long a full elevator visibly holds its passengers before disembarking.
+    // Without this, board+disembark happens almost instantly and the status table's
+    // 500ms refresh tick rarely catches the elevator showing any passengers at all.
+    private const int _deliveringPassengersDisplayDelayMilliseconds = 1500;
+
     public ElevatorController(
         IDispatchStrategy dispatchStrategy,
         ILogger<ElevatorController> logger,
@@ -71,6 +81,14 @@ public sealed class ElevatorController : IElevatorController, IAsyncDisposable
 
             await elevator.BoardPassengersAsync(passengersThisElevatorCanTake, cancellationToken);
 
+            // This model has no separate destination floor — boarding and delivery
+            // are the same trip. Hold here briefly so the status table has a chance
+            // to show the boarded passengers, then disembark to free the elevator's
+            // capacity back up. Without disembarking, CurrentPassengerCount never
+            // drops and IsAvailable stays false forever once an elevator fills up.
+            await Task.Delay(_deliveringPassengersDisplayDelayMilliseconds, cancellationToken);
+            await elevator.DisembarkAllPassengersAsync(cancellationToken);
+
             int remainingPassengers = request.PassengerCount - passengersThisElevatorCanTake;
             if (remainingPassengers > 0)
             {
@@ -93,7 +111,12 @@ public sealed class ElevatorController : IElevatorController, IAsyncDisposable
         await foreach (ElevatorRequest pendingRequest in
             _pendingRequestChannel.Reader.ReadAllAsync(_shutdownTokenSource.Token))
         {
-            await DispatchElevatorAsync(pendingRequest, _shutdownTokenSource.Token);
+            IElevator? dispatchedElevator = await DispatchElevatorAsync(pendingRequest, _shutdownTokenSource.Token);
+
+            if (dispatchedElevator is null)
+            {
+                await Task.Delay(_noElevatorAvailableRetryDelayMilliseconds, _shutdownTokenSource.Token);
+            }
         }
     }
 
