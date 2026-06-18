@@ -1,6 +1,5 @@
 using System.Threading.Channels;
 using ElevatorSim.Application.Interfaces;
-using ElevatorSim.Domain.Entities;
 using ElevatorSim.Domain.Interfaces;
 using ElevatorSim.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
@@ -10,15 +9,18 @@ public sealed class ElevatorController : IElevatorController, IAsyncDisposable
 {
     private readonly IDispatchStrategy _dispatchStrategy;
     private readonly ILogger<ElevatorController> _logger;
-    private readonly List<ElevatorBase> _elevators;
+    private readonly List<IElevatorControl> _elevators;
     private readonly Channel<ElevatorRequest> _pendingRequestChannel;
     private readonly Task _requestProcessorTask;
     private readonly CancellationTokenSource _shutdownTokenSource;
 
+    private const int _noElevatorAvailableRetryDelayMilliseconds = 5000;
+    private const int _deliveringPassengersDisplayDelayMilliseconds = 5000;
+
     public ElevatorController(
         IDispatchStrategy dispatchStrategy,
         ILogger<ElevatorController> logger,
-        IEnumerable<ElevatorBase> elevators)
+        IEnumerable<IElevatorControl> elevators)
     {
         _dispatchStrategy = dispatchStrategy;
         _logger = logger;
@@ -46,7 +48,7 @@ public sealed class ElevatorController : IElevatorController, IAsyncDisposable
             "Elevator {ElevatorId} dispatched to floor {Floor} for {PassengerCount} passengers.",
             selectedElevator.Id, request.RequestedFloor, request.PassengerCount);
 
-        ElevatorBase elevatorControl = _elevators.First(elevator => elevator.Id == selectedElevator.Id);
+        IElevatorControl elevatorControl = _elevators.First(elevator => elevator.Id == selectedElevator.Id);
         _ = Task.Run(
             () => ExecuteElevatorTripAsync(elevatorControl, request, cancellationToken),
             cancellationToken);
@@ -55,10 +57,10 @@ public sealed class ElevatorController : IElevatorController, IAsyncDisposable
     }
 
     public IReadOnlyList<IElevator> GetAllElevatorStatuses() =>
-        _elevators.Cast<IElevator>().ToList().AsReadOnly();
+        _elevators.OfType<IElevator>().ToList().AsReadOnly();
 
     private async Task ExecuteElevatorTripAsync(
-        ElevatorBase elevator,
+        IElevatorControl elevator,
         ElevatorRequest request,
         CancellationToken cancellationToken)
     {
@@ -71,6 +73,14 @@ public sealed class ElevatorController : IElevatorController, IAsyncDisposable
                 elevator.MaximumPassengerCapacity - elevator.CurrentPassengerCount);
 
             await elevator.BoardPassengersAsync(passengersThisElevatorCanTake, cancellationToken);
+
+            // This model has no separate destination floor — boarding and delivery
+            // are the same trip. Hold here briefly so the status table has a chance
+            // to show the boarded passengers, then disembark to free the elevator's
+            // capacity back up. Without disembarking, CurrentPassengerCount never
+            // drops and IsAvailable stays false forever once an elevator fills up.
+            await Task.Delay(_deliveringPassengersDisplayDelayMilliseconds, cancellationToken);
+            await elevator.DisembarkAllPassengersAsync(cancellationToken);
 
             int remainingPassengers = request.PassengerCount - passengersThisElevatorCanTake;
             if (remainingPassengers > 0)
@@ -94,7 +104,12 @@ public sealed class ElevatorController : IElevatorController, IAsyncDisposable
         await foreach (ElevatorRequest pendingRequest in
             _pendingRequestChannel.Reader.ReadAllAsync(_shutdownTokenSource.Token))
         {
-            await DispatchElevatorAsync(pendingRequest, _shutdownTokenSource.Token);
+            IElevator? dispatchedElevator = await DispatchElevatorAsync(pendingRequest, _shutdownTokenSource.Token);
+
+            if (dispatchedElevator is null)
+            {
+                await Task.Delay(_noElevatorAvailableRetryDelayMilliseconds, _shutdownTokenSource.Token);
+            }
         }
     }
 
