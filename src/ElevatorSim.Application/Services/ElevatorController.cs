@@ -14,14 +14,7 @@ public sealed class ElevatorController : IElevatorController, IAsyncDisposable
     private readonly Task _requestProcessorTask;
     private readonly CancellationTokenSource _shutdownTokenSource;
 
-    // When no elevator is available, the request gets written back onto this same
-    // channel. Without a delay, the reader picks it straight back up with nothing
-    // having changed, spinning the CPU and flooding the logs until something frees up.
     private const int _noElevatorAvailableRetryDelayMilliseconds = 1000;
-
-    // How long a full elevator visibly holds its passengers before disembarking.
-    // Without this, board+disembark happens almost instantly and the status table's
-    // 500ms refresh tick rarely catches the elevator showing any passengers at all.
     private const int _deliveringPassengersDisplayDelayMilliseconds = 1500;
 
     public ElevatorController(
