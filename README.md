@@ -17,8 +17,8 @@ A console application simulating elevator dispatch in a configurable building. B
 
 ### Build and Run
 ```bash
-git clone https://github.com/your_username/Dotnet-Elevator-Sashen.git
-cd dotnet-elevator-sim
+git clone https://github.com/your_username/dotnet-elevator-console.git
+cd dotnet-elevator-console
 dotnet build
 dotnet run --project src/ElevatorSim.Console
 ```
@@ -27,6 +27,7 @@ dotnet run --project src/ElevatorSim.Console
 ```bash
 dotnet test
 ```
+Runs the xUnit suite (Application validators, dispatch strategy, Domain elevator behavior). A passing run currently shows `Passed! - Failed: 0, Passed: 16, Skipped: 0, Total: 16`. The same command runs in CI on every push/PR via `.github/workflows/ci.yml`.
 
 ## How to Use
 At startup the app prompts for: number of floors, number of elevators, and passenger capacity per elevator.
@@ -46,6 +47,6 @@ ElevatorSim.Tests           ← xUnit tests
 ```
 
 ## Assumptions
-- Passenger model is simplified: passengers board at the called floor and tthe elevator returns to idle after boarding.
-- FreightElevator and HighSpeedElevator are fully implemented elevator types accessible by extending the factory call.
-- All state is in-memory, no persistence between sessions.
+- Passenger model is simplified: there's no separate destination floor. The elevator travels to the called floor, boards the passengers, briefly holds them so the status table can show it, then disembarks and returns to idle.
+- `FreightElevator` and `HighSpeedElevator` are fully implemented elevator types, selectable by extending the factory call.
+- All state is in-memory, nothing persists between sessions.
