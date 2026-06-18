@@ -11,7 +11,9 @@ public sealed class NearestAvailableDispatchStrategy : IDispatchStrategy
     )
     {
         if (availableElevators.Count == 0)
+        {
             return null;
+        }
 
         return availableElevators
             .Where(elevator => elevator.IsAvailable)
